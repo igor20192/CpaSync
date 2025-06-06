@@ -1,0 +1,7 @@
+[
+  {"date": "2025-06-04", "campaign_id": "CAMP-123", "conversions": 14},
+  {"date": "2025-06-04", "campaign_id": "CAMP-456", "conversions":  3},
+  {"date": "2025-06-05", "campaign_id": "CAMP-123", "conversions": 10},
+  {"date": "2025-06-05", "campaign_id": "CAMP-456", "conversions":  5},
+  {"date": "2025-06-06", "campaign_id": "CAMP-888", "conversions":  7}
+]

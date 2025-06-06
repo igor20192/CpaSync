@@ -1,0 +1,7 @@
+[
+  {"date": "2025-06-04", "campaign_id": "CAMP-123", "spend": 37.50},
+  {"date": "2025-06-04", "campaign_id": "CAMP-456", "spend": 19.90},
+  {"date": "2025-06-05", "campaign_id": "CAMP-123", "spend": 42.10},
+  {"date": "2025-06-05", "campaign_id": "CAMP-789", "spend": 11.00},
+  {"date": "2025-06-06", "campaign_id": "CAMP-999", "spend":  5.25}
+]
