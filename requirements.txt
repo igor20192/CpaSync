@@ -5,3 +5,4 @@ apscheduler
 python-dotenv
 pytest
 tenacity
+pytest-mock
