@@ -80,6 +80,8 @@ def main():
     cpa_calculator = CpaCalculator()
     db_engine = create_engine(os.getenv("DB_URL"))
     repository = PostgresRepository(db_engine)
+    spend_path = os.getenv("SPEND_PATH")
+    conv_path = os.getenv("CONV_PATH")
 
     logging.info(f"Started processing from {args.start_date} to {args.end_date}")
 
@@ -91,7 +93,7 @@ def main():
                 logging.info(f"Skipping {date_str}: already processed.")
                 continue
 
-            df = data_reader.read(os.getenv("SPEND_PATH"), os.getenv("CONV_PATH"))
+            df = data_reader.read(spend_path, conv_path)
             df = df[df["date"] == date_str]
 
             if df.empty:
@@ -113,3 +115,16 @@ def main():
 if __name__ == "__main__":
     scheduler = Scheduler(main)
     scheduler.start()
+
+    try:
+        import signal
+        from threading import Event
+
+        exit_event = Event()
+        signal.signal(signal.SIGINT, lambda *args: exit_event.set())
+        signal.signal(signal.SIGTERM, lambda *args: exit_event.set())
+        exit_event.wait()
+    except KeyboardInterrupt:
+        logging.info("Shutting down scheduler")
+        scheduler.scheduler.shutdown()
+        logging.info("Scheduler shut down")
