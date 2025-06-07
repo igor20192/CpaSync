@@ -88,27 +88,18 @@ class PostgresRepository(DatabaseRepository):
         Args:
             data (pd.DataFrame): DataFrame containing campaign statistics.
         """
+        records = data.to_dict("records")
         with self.engine.begin() as conn:
-            for _, row in data.iterrows():
-                stmt = (
-                    insert(DailyStats)
-                    .values(
-                        date=row["date"],
-                        campaign_id=row["campaign_id"],
-                        spend=row.get("spend", 0),
-                        conversions=row.get("conversions", 0),
-                        cpa=row["cpa"],
-                    )
-                    .on_conflict_do_update(
-                        index_elements=["date", "campaign_id"],
-                        set_=dict(
-                            spend=row["spend"],
-                            conversions=row["conversions"],
-                            cpa=row["cpa"],
-                        ),
-                    )
-                )
-                conn.execute(stmt)
+            stmt = insert(DailyStats).values(records)
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["date", "campaign_id"],
+                set_={
+                    "spend": stmt.excluded.spend,
+                    "conversions": stmt.excluded.conversions,
+                    "cpa": stmt.excluded.cpa,
+                },
+            )
+            conn.execute(stmt)
         logging.info(f"Upserted {len(data)} records.")
 
     def check_date_exists(self, date: str) -> bool:
