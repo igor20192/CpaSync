@@ -1,9 +1,10 @@
 # tests/test_cpa.py
 import pytest
 import pandas as pd
+from run import print_summary
 from src.cpa_calculator import calculate_cpa, CpaCalculator
 from src.data_reader import JsonDataReader
-from src.db_repository import PostgresRepository, DailyStats
+from src.db_repository import PostgresRepository
 import json
 import sqlalchemy as sa
 from unittest.mock import Mock
@@ -121,3 +122,13 @@ def test_postgres_repository_check_date(mocker):
     mock_conn.execute.return_value.fetchone.return_value = None
     mocker.patch.object(engine, "connect", return_value=mock_conn)
     assert repo.check_date_exists("2025-06-04") is False
+
+
+def test_print_summary(capsys):
+    print_summary(3, [2.68, 6.63, 4.21])
+    captured = capsys.readouterr()
+    assert "Summary: Processed 3 records, Average CPA: 4.51" in captured.out
+
+    print_summary(0, [])
+    captured = capsys.readouterr()
+    assert "Summary: No records processed." in captured.out
