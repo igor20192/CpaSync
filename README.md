@@ -61,7 +61,7 @@ POSTGRES_PASSWORD=password
 POSTGRES_DB=dbname
 ```
 
-3. **Build and run with Docker Compose:
+3. **Build and run with Docker Compose:**
 ```bash
 docker-compose up --build
 ```
