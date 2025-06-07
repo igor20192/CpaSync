@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 from datetime import datetime
+from typing import List, Optional
 from dotenv import load_dotenv
 
 import pandas as pd
@@ -66,6 +67,27 @@ def parse_arguments():
     return args
 
 
+def print_summary(records: int, cpa_values: List[float]) -> None:
+    """
+    Print and log a summary of processed records and average CPA.
+
+    Args:
+        records: Total number of processed records.
+        cpa_values: List of CPA values (excluding None/NaN).
+    """
+    if records > 0:
+        avg_cpa: Optional[float] = (
+            sum(cpa_values) / len(cpa_values) if cpa_values else None
+        )
+        cpa_display = f"{avg_cpa:.2f}" if avg_cpa is not None else "N/A"
+        summary = f"Summary: Processed {records} records, Average CPA: {cpa_display}"
+    else:
+        summary = "Summary: No records processed."
+
+    print(summary)
+    logging.info(summary)
+
+
 def main():
     """
     Main workflow:
@@ -85,6 +107,9 @@ def main():
 
     logging.info(f"Started processing from {args.start_date} to {args.end_date}")
 
+    total_records = 0
+    cpa_values = []
+
     try:
         for date in pd.date_range(args.start_date, args.end_date):
             date_str = date.strftime("%Y-%m-%d")
@@ -102,9 +127,13 @@ def main():
 
             df = cpa_calculator.process(df)
             repository.upsert(df)
+            total_records += len(df)
+            cpa_values.extend(df["cpa"].dropna().tolist())
 
             logging.info(f"Processed and stored data for {date_str}.")
             print(f"Processed {date_str}: {len(df)} records")
+
+        print_summary(total_records, cpa_values)
 
     except Exception as e:
         logging.exception("An error occurred during processing.")
