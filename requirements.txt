@@ -4,6 +4,7 @@ psycopg2-binary
 apscheduler
 python-dotenv
 pytest
+pytest-cov
 tenacity
 pytest-mock
 ruff
